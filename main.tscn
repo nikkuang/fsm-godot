@@ -19,10 +19,10 @@ func _input(event):
 			add_child(food)
 "
 
-[sub_resource type="RectangleShape2D" id=5]
+[sub_resource type="RectangleShape2D" id=2]
 
 custom_solver_bias = 0.0
-extents = Vector2( 250, 10 )
+extents = Vector2( 271.188, 10 )
 
 [node name="Main" type="Node2D"]
 
@@ -40,12 +40,30 @@ transform/pos = Vector2( 350.565, 219.667 )
 
 transform/pos = Vector2( 279.261, 63.0922 )
 
+[node name="Chicken3" parent="." instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 442.716, 78.0606 )
+
+[node name="Chicken4" parent="." instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 67.3081, 245.108 )
+
 [node name="StaticBody2D" type="StaticBody2D" parent="."]
 
+editor/display_folded = true
 input/pickable = false
-shapes/0/shape = SubResource( 5 )
-shapes/0/transform = Matrix32( 1, 0, 0, 1, 249.197, 277.131 )
+shapes/0/shape = SubResource( 2 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 252.807, 309.621 )
 shapes/0/trigger = false
+shapes/1/shape = SubResource( 2 )
+shapes/1/transform = Matrix32( 1, 0, 0, 1, 260.893, -5.73343 )
+shapes/1/trigger = false
+shapes/2/shape = SubResource( 2 )
+shapes/2/transform = Matrix32( -0.00214736, -0.999998, 0.999998, -0.00214736, 520.745, 126.587 )
+shapes/2/trigger = false
+shapes/3/shape = SubResource( 2 )
+shapes/3/transform = Matrix32( -0.00214736, -0.999998, 0.999998, -0.00214736, -3.14998, 127.186 )
+shapes/3/trigger = false
 collision/layers = 1
 collision/mask = 1
 constant_linear_velocity = Vector2( 0, 0 )
@@ -55,9 +73,32 @@ bounce = 0.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 
-transform/pos = Vector2( 249.197, 277.131 )
-shape = SubResource( 5 )
+transform/pos = Vector2( 252.807, 309.621 )
+shape = SubResource( 2 )
 trigger = false
 _update_shape_index = 0
+
+[node name="CollisionShape2D1" type="CollisionShape2D" parent="StaticBody2D"]
+
+transform/pos = Vector2( 260.893, -5.73343 )
+shape = SubResource( 2 )
+trigger = false
+_update_shape_index = 1
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="StaticBody2D"]
+
+transform/pos = Vector2( 520.745, 126.587 )
+transform/rot = 90.123
+shape = SubResource( 2 )
+trigger = false
+_update_shape_index = 2
+
+[node name="CollisionShape2D3" type="CollisionShape2D" parent="StaticBody2D"]
+
+transform/pos = Vector2( -3.14998, 127.186 )
+transform/rot = 90.123
+shape = SubResource( 2 )
+trigger = false
+_update_shape_index = 3
 
 

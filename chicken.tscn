@@ -2,12 +2,12 @@
 
 [ext_resource path="res://chicken.png" type="Texture" id=1]
 
-[sub_resource type="CircleShape2D" id=2]
+[sub_resource type="CircleShape2D" id=1]
 
 custom_solver_bias = 0.0
 radius = 10.0
 
-[sub_resource type="GDScript" id=3]
+[sub_resource type="GDScript" id=2]
 
 script/source = "extends Object
 
@@ -29,16 +29,20 @@ func _process(delta):
 	fsm.update(delta)   
 	get_node('Sprite').set_scale(Vector2(1,1))
 	
+	
 func state_thinking(delta): 
 	if has_target():
 		fsm.push_state('state_food_found')
 	else :
 		random_location = Vector2(get_pos().x + rand_range(-100, 100), get_pos().y + rand_range(-100, 100))
-		fsm.push_state('state_wandering', 5);
+		fsm.push_state('state_wandering', 5)
 	
 func state_wandering(delta): 
 	recheck_food_nearby()
 	move_to_target(random_location, delta) 
+	
+	if has_target():
+		fsm.pop_state()
 	
 func state_food_found(delta):  
 	if has_target(): 
@@ -89,12 +93,12 @@ func _on_Reach_body_enter( body ):
 		can_be_eaten = true
 "
 
-[sub_resource type="CircleShape2D" id=4]
+[sub_resource type="CircleShape2D" id=3]
 
 custom_solver_bias = 0.0
 radius = 100.0
 
-[sub_resource type="CircleShape2D" id=6]
+[sub_resource type="CircleShape2D" id=4]
 
 custom_solver_bias = 0.0
 radius = 15.0
@@ -104,21 +108,38 @@ radius = 15.0
 editor/display_folded = true
 transform/pos = Vector2( 232.95, 163.065 )
 input/pickable = false
-shapes/0/shape = SubResource( 2 )
+shapes/0/shape = SubResource( 1 )
 shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
 shapes/0/trigger = false
 collision/layers = 1
 collision/mask = 1
 collision/margin = 0.08
-script/script = SubResource( 3 )
+script/script = SubResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 
-shape = SubResource( 2 )
+shape = SubResource( 1 )
 trigger = false
 _update_shape_index = 0
 
 [node name="Site" type="Area2D" parent="."]
+
+input/pickable = true
+shapes/0/shape = SubResource( 3 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
+shapes/0/trigger = false
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Site"]
+
+shape = SubResource( 3 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Reach" type="Area2D" parent="."]
 
 input/pickable = true
 shapes/0/shape = SubResource( 4 )
@@ -129,26 +150,9 @@ gravity = 98.0
 linear_damp = 0.1
 angular_damp = 1.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Site"]
-
-shape = SubResource( 4 )
-trigger = false
-_update_shape_index = 0
-
-[node name="Reach" type="Area2D" parent="."]
-
-input/pickable = true
-shapes/0/shape = SubResource( 6 )
-shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
-shapes/0/trigger = false
-gravity_vec = Vector2( 0, 1 )
-gravity = 98.0
-linear_damp = 0.1
-angular_damp = 1.0
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Reach"]
 
-shape = SubResource( 6 )
+shape = SubResource( 4 )
 trigger = false
 _update_shape_index = 0
 
