@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=1]
+
+[ext_resource path="res://chicken.tscn" type="PackedScene" id=1]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "extends Node2D
+
+const FOOD = preload('res://food.tscn')
+
+func _ready():
+	set_process_input(true) 
+	
+func _input(event):  
+	if event.type == InputEvent.MOUSE_BUTTON:
+		if event.button_index == BUTTON_LEFT and event.pressed:
+			var food = FOOD.instance()
+			food.set_pos(event.pos)
+			add_child(food)
+"
+
+[sub_resource type="RectangleShape2D" id=5]
+
+custom_solver_bias = 0.0
+extents = Vector2( 250, 10 )
+
+[node name="Main" type="Node2D"]
+
+script/script = SubResource( 1 )
+
+[node name="Chicken" parent="." instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 160.911, 169.681 )
+
+[node name="Chicken1" parent="." instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 350.565, 219.667 )
+
+[node name="Chicken2" parent="." instance=ExtResource( 1 )]
+
+transform/pos = Vector2( 279.261, 63.0922 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+input/pickable = false
+shapes/0/shape = SubResource( 5 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 249.197, 277.131 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+constant_linear_velocity = Vector2( 0, 0 )
+constant_angular_velocity = 0.0
+friction = 1.0
+bounce = 0.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+
+transform/pos = Vector2( 249.197, 277.131 )
+shape = SubResource( 5 )
+trigger = false
+_update_shape_index = 0
+
+

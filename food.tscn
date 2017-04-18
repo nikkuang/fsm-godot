@@ -1,0 +1,46 @@
+[gd_scene load_steps=4 format=1]
+
+[ext_resource path="res://food.png" type="Texture" id=1]
+
+[sub_resource type="CircleShape2D" id=1]
+
+custom_solver_bias = 0.0
+radius = 10.0
+
+[sub_resource type="GDScript" id=2]
+
+script/source = "extends Object
+
+var quantity = 20
+ 
+func edible() :
+	return true
+
+func consume(n):
+	quantity -= n
+	if quantity <= 0:
+		queue_free()
+"
+
+[node name="Food" type="KinematicBody2D"]
+
+input/pickable = false
+shapes/0/shape = SubResource( 1 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+collision/margin = 0.08
+script/script = SubResource( 2 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+shape = SubResource( 1 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Sprite" type="Sprite" parent="."]
+
+texture = ExtResource( 1 )
+
+

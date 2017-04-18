@@ -1,0 +1,165 @@
+[gd_scene load_steps=6 format=1]
+
+[ext_resource path="res://chicken.png" type="Texture" id=1]
+
+[sub_resource type="CircleShape2D" id=2]
+
+custom_solver_bias = 0.0
+radius = 10.0
+
+[sub_resource type="GDScript" id=3]
+
+script/source = "extends Object
+
+const SFSM = preload('res://sfsm.gd')
+ 
+onready var fsm = SFSM.new(self) 
+
+var current_target = null
+var speed = 10
+var can_be_eaten = false
+
+var random_location = Vector2(0, 0)
+ 
+func _ready(): 
+	set_process(true)
+	fsm.push_state('state_thinking')
+
+func _process(delta):
+	fsm.update(delta)   
+	get_node('Sprite').set_scale(Vector2(1,1))
+	
+func state_thinking(delta): 
+	if has_target():
+		fsm.push_state('state_food_found')
+	else :
+		random_location = Vector2(get_pos().x + rand_range(-100, 100), get_pos().y + rand_range(-100, 100))
+		fsm.push_state('state_wandering', 5);
+	
+func state_wandering(delta): 
+	recheck_food_nearby()
+	move_to_target(random_location, delta) 
+	
+func state_food_found(delta):  
+	if has_target(): 
+		if can_be_eaten:
+			get_target().consume(10*delta)
+		else:
+			move_to_target(get_target().get_pos(), delta) # Move The object 
+	else:
+		can_be_eaten = false
+		fsm.pop_state();
+		 
+func move_to_target(pos, delta):
+	var target_angle = get_pos().angle_to_point(pos) + deg2rad(0)
+	var direction = Vector2(0,-1).rotated(target_angle) 
+	if(direction.length_squared() > 1):
+		direction = direction.normalized()  
+	move(direction * speed * delta)
+
+func _on_Area2D_body_enter( body ):
+	if body.has_method('edible') and body.edible(): 
+		if has_target():
+			current_target = weakref(get_nearest_target(get_target(), body))
+		else :
+			current_target = weakref(body)
+		  
+func recheck_food_nearby(): 
+	var bodies = get_node('Site').get_overlapping_bodies(); 
+	for body in bodies: 
+		if  body.has_method('edible') and body.edible():
+			if has_target(): 
+				current_target = weakref(get_nearest_target(get_target(), body))
+			else:
+				current_target = weakref(body) 
+
+func get_target():
+	return current_target.get_ref()
+	
+func has_target():
+	return current_target and current_target.get_ref()
+	
+func get_nearest_target(target1, target2):  
+	if get_pos().distance_to(target1.get_pos()) > get_pos().distance_to(target2.get_pos()):
+		return target2  
+	return target1 
+	
+func _on_Reach_body_enter( body ):
+	if has_target() and get_target() == body:
+		can_be_eaten = true
+"
+
+[sub_resource type="CircleShape2D" id=4]
+
+custom_solver_bias = 0.0
+radius = 100.0
+
+[sub_resource type="CircleShape2D" id=6]
+
+custom_solver_bias = 0.0
+radius = 15.0
+
+[node name="Chicken" type="KinematicBody2D"]
+
+editor/display_folded = true
+transform/pos = Vector2( 232.95, 163.065 )
+input/pickable = false
+shapes/0/shape = SubResource( 2 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
+shapes/0/trigger = false
+collision/layers = 1
+collision/mask = 1
+collision/margin = 0.08
+script/script = SubResource( 3 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+shape = SubResource( 2 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Site" type="Area2D" parent="."]
+
+input/pickable = true
+shapes/0/shape = SubResource( 4 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
+shapes/0/trigger = false
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Site"]
+
+shape = SubResource( 4 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Reach" type="Area2D" parent="."]
+
+input/pickable = true
+shapes/0/shape = SubResource( 6 )
+shapes/0/transform = Matrix32( 1, 0, 0, 1, 0, 0 )
+shapes/0/trigger = false
+gravity_vec = Vector2( 0, 1 )
+gravity = 98.0
+linear_damp = 0.1
+angular_damp = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Reach"]
+
+shape = SubResource( 6 )
+trigger = false
+_update_shape_index = 0
+
+[node name="Sprite" type="Sprite" parent="."]
+
+texture = ExtResource( 1 )
+
+[connection signal="body_enter" from="Site" to="." method="_on_Area2D_body_enter"]
+
+[connection signal="body_exit" from="Site" to="." method="_on_Area2D_body_exit"]
+
+[connection signal="body_enter" from="Reach" to="." method="_on_Reach_body_enter"]
+
+
