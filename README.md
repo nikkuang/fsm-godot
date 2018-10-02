@@ -1,0 +1,1 @@
+![Sample](sample.gif?raw=true "Sample")
